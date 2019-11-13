@@ -6,5 +6,6 @@ import en from './config/locales/en';
 i18n.fallbacks = true;
 i18n.translations = { hu, en };
 i18n.locale = Localization.locale;
+i18n.locale = 'hu';
 
 export default i18n;
