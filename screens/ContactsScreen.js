@@ -21,10 +21,16 @@ const ContactsScreen = () => {
   const [search, setSearch] = useState('');
   const [contacts, setContacts] = useState([]);
   const [permissionsGranted, setPermissionsGranted] = useState(false);
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     const askPermissions = async () => {
-      const { status } = await Permissions.askAsync(Permissions.CONTACTS);
+      const { status } = await Permissions.askAsync(
+        Permissions.CONTACTS,
+        Permissions.CAMERA,
+        Permissions.CAMERA_ROLL,
+      );
       if (status === 'granted') {
         setPermissionsGranted(true);
       }
@@ -56,6 +62,20 @@ const ContactsScreen = () => {
     loadContacts();
   }, [search, permissionsGranted]);
 
+  async function createPhoto() {
+    const result = await ImagePicker.launchCameraAsync();
+    if (!result.cancelled) {
+      const path = `${FileSystem.documentDirectory}${selectedContact.id}.jpg`;
+      await FileSystem.copyAsync({
+        from: result.uri,
+        to: path,
+      });
+      setImage(path);
+    }
+  }
+
+  console.log(image);
+
   return (
     <View style={styles.container}>
       <Button
@@ -70,8 +90,25 @@ const ContactsScreen = () => {
         visible={visible}
         onCancel={() => setVisible(false)}
         onSearch={setSearch}
-        onSelect={() => { }}
+        onSelect={(contact) => {
+          setSelectedContact(contact);
+          setVisible(false);
+        }}
       />
+      {selectedContact && (
+        <>
+          <Text>
+            {selectedContact.name}
+          </Text>
+          <Button
+            title="Create a photo"
+            onPress={createPhoto}
+          />
+          {image && (
+            <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
+          )}
+        </>
+      )}
     </View>
   );
 }

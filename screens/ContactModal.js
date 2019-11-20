@@ -39,7 +39,7 @@ const ContactModal = ({ visible, contacts, search, onSearch, onCancel, onSelect 
           renderItem={(row) => {
             return (
               <TouchableHighlight
-                onPress={() => { }}
+                onPress={() => { onSelect(row.item) }}
               >
                 <ListItem
                   title={row.item.name}
